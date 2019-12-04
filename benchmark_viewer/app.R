@@ -17,13 +17,13 @@ library(gridExtra)
 library(grid)
 
 
-bm_all <- readRDS("/g/huber/users/msmith/BioconductorPkgs/hdf5Filters/vignettes/bm_all.rds")
+bm_all <- readRDS(gzcon(url("https://github.com/grimbough/rhdf5filters-benchmarks/blob/master/data/bm_all.rds?raw=true")))
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("Benchmarking HDF5 Compression Filters"),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
