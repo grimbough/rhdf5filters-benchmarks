@@ -1,14 +1,14 @@
-# rhdf5filters
 
-<img align = "right" src="https://raw.githubusercontent.com/Bioconductor/BiocStickers/master/rhdf5/rhdf5.png" height="200">
+## Shiny App
 
-This R package provides an R distribution of several compression filters that can be applied to HDF5 datasets.
+You can run a local version of the Shiny App with the code below:
 
-## Current Status
+```r
+shiny::runGitHub(repo = "rhdf5filters-benchmarks", 
+                 username = "grimbough", 
+                 subdir = "benchmark_viewer")
+```
 
-| Travis        | Test Coverage |
-| ------------- | -----|
-| [![Build Status](https://travis-ci.org/grimbough/rhdf5.svg?branch=master)](https://travis-ci.org/grimbough/rhdf5filters) |  [![Codecov](http://img.shields.io/codecov/c/github/grimbough/rhdf5.svg)](https://codecov.io/gh/grimbough/rhdf5filters) |
 
 
 ## Funding 
