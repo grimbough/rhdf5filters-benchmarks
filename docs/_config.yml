@@ -1,1 +1,4 @@
 theme: jekyll-theme-minimal
+
+title: Benchmarking HDF5 Filters in R
+logo: /assets/logo.png
