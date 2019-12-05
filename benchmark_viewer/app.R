@@ -1,12 +1,3 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(dplyr)
 library(ggplot2)
@@ -21,58 +12,62 @@ bm_all <- readRDS(gzcon(url("https://github.com/grimbough/rhdf5filters-benchmark
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-
+    
     # Application title
     titlePanel("Benchmarking HDF5 Compression Filters"),
-
+    
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
             radioButtons("chunk_dims",
                          "Chunk Dimensions",
                          choices = unique(bm_all$chunk_dims)
-                         ),
+            ),
             radioButtons("shuffle",
                          "Shuffle",
                          choices = c(TRUE, FALSE)
             ),
-            # radioButtons("baseline",
-            #              "Baseline",
-            #              choices = list("Absolute values" = TRUE,
-            #                             "GZIP default" = FALSE)
-            #              ),
             radioButtons("order",
                          "Ordering",
                          choices = list("Median" = 1, "Filter" = 2))
             ,
             
             checkboxGroupInput("filters",
-                        "Filters",
-                        choices = unique(bm_all$filter),
-                        selected = unique(bm_all$filter)
-                        ),
+                               "Filters",
+                               choices = unique(bm_all$filter),
+                               selected = unique(bm_all$filter)
+            ),
             width = 2
         ),
-
+        
         # Show a plot of the generated distribution
         mainPanel(
-            fluidRow(
-                column(4,
-                    plotOutput("distPlot", height = "500px"),
-                ),
-                column(4,
-                    plotOutput("distPlot2", height = "500px")
-                    ),
-                column(4,
-                    plotOutput("distPlot3", height = "500px")
-                    ),
+            
+            # Output: Tabset w/ plot, summary, and table ----
+            tabsetPanel(type = "tabs",
+                        tabPanel("Read times", plotOutput("distPlot", height = "700px")),
+                        tabPanel("Write times", plotOutput("distPlot2", height = "700px")),
+                        tabPanel("File sizes", plotOutput("distPlot3", height = "700px"))
             ),
+            
+            
+            # fluidRow(
+            #     column(4,
+            #         plotOutput("distPlot", height = "500px"),
+            #     ),
+            #     column(4,
+            #         plotOutput("distPlot2", height = "500px")
+            #         ),
+            #     column(4,
+            #         plotOutput("distPlot3", height = "500px")
+            #         ),
+            # ),
             fluidRow(
                 column(12,
-                     plotOutput("legend", height = "50px")
-                     ),
+                       plotOutput("legend", height = "50px")
+                ),
             ),
-           width = 10
+            width = 10
         )
     )
 )
@@ -83,9 +78,9 @@ server <- function(input, output) {
     tmp <- reactive({
         tab <- bm_all %>%
             filter(filter %in% input$filters) %>%
-        filter(shuffle == input$shuffle) %>%
-        filter(chunk_dims == input$chunk_dims) %>%
-        mutate(ID = paste(filter, level, shuffle, sep = "-"))
+            filter(shuffle == input$shuffle) %>%
+            filter(chunk_dims == input$chunk_dims) %>%
+            mutate(ID = paste(filter, level, shuffle, sep = "-"))
         
         # if(input$baseline) {
         #      default <- bm_all %>%
@@ -115,9 +110,9 @@ server <- function(input, output) {
         tmp() %>%
             ggplot(aes(x = if(input$order == 1) {
                 reorder(ID, read_time, FUN = fun)
-                } else {
-                    ID
-                })) +
+            } else {
+                ID
+            })) +
             scale_color_manual(values = c(brewer.pal(8, "Set2"), "grey30"), 
                                aesthetics = c("color", "fill")) +
             theme(legend.position = "none") 
@@ -128,9 +123,9 @@ server <- function(input, output) {
             geom_bar(aes(y = file_size / 10e6, fill = filter), stat = "identity") +
             theme(legend.position = "bottom") 
     })
-
+    
     output$distPlot <- renderPlot({
-
+        
         p1 <- plot_start() +
             geom_boxplot(aes(y = read_time, fill = filter), outlier.shape = NA, alpha = 0.3) +
             geom_jitter(aes(y = read_time, color = filter)) +
@@ -177,6 +172,8 @@ server <- function(input, output) {
             as_ggplot()
         legend
     })
+    
+    
     
 }
 
